@@ -1,6 +1,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /source
 
+RUN apk update
+RUN apk add gcompat
+
 COPY ./ ./
 RUN dotnet restore -r linux-musl-x64
 RUN dotnet publish -c release -o /app -r linux-musl-x64 --no-self-contained --no-restore
