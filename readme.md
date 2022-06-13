@@ -1,5 +1,11 @@
 # aspnetcore-alpine-sass
 
+**UPDATE**
+
+This has now been for now at least fixed see [issue](https://github.com/koenvzeijl/AspNetCore.SassCompiler/issues/93) and [commit](https://github.com/solrevdev/aspnetcore-alpine-sass/commit/1d89d8ba01f713b6669c8e71e56b9a7a5b73f85d) for details
+
+----------------
+
 This is to repo the alpine docker issue I was having with https://github.com/koenvzeijl/AspNetCore.SassCompiler
 
 Both the default `Dockerfile` and `Dockerfile.alpine-x64` builds worked until I added `AspNetCore.SassCompiler`
