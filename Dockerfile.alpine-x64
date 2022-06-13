@@ -2,7 +2,17 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 WORKDIR /source
 
 RUN apk update
-RUN apk add gcompat
+
+# See https://github.com/koenvzeijl/AspNetCore.SassCompiler/issues/93
+# THIS WORKS! https://github.com/CargoSense/dart_sass#compatibility-with-alpine-linux-mix-sass-default-exited-with-2
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-2.34-r0.apk
+RUN apk add glibc-2.34-r0.apk
+
+# THIS DOES NOT https://github.com/sgerrand/alpine-pkg-glibc#installing
+#RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+#RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r0/glibc-2.35-r0.apk
+#RUN apk add glibc-2.35-r0.apk
 
 COPY ./ ./
 RUN dotnet restore -r linux-musl-x64
