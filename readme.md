@@ -4,6 +4,37 @@
 
 This has now been for now at least fixed see [issue](https://github.com/koenvzeijl/AspNetCore.SassCompiler/issues/93) and [commit](https://github.com/solrevdev/aspnetcore-alpine-sass/commit/1d89d8ba01f713b6669c8e71e56b9a7a5b73f85d) for details
 
+So, `glibc-2.34-r0.apk` works for me whereas the version `glibc-2.35-r0.apk` from the source site did not.
+
+```diff
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
+WORKDIR /source
+
+RUN apk update
+
++ # THIS WORKS (glibc-2.34-r0.apk) https://github.com/CargoSense/dart_sass#compatibility-with-alpine-linux-mix-sass-default-exited-with-2
++ #RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
++ #RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.34-r0/glibc-2.34-r0.apk
++ #RUN apk add glibc-2.34-r0.apk
++ 
++ # THIS (glibc-2.35-r0.apk) FROM SOURCE SITE DOES NOT https://github.com/sgerrand/alpine-pkg-glibc#installing
++ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
++ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r0/glibc-2.35-r0.apk
++ RUN apk add glibc-2.35-r0.apk
+
+COPY ./ ./
+RUN dotnet restore -r linux-musl-x64
+RUN dotnet publish -c release -o /app -r linux-musl-x64 --no-self-contained --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine-amd64
+WORKDIR /app
+COPY --from=build /app ./
+
+EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:80
+ENTRYPOINT ["dotnet", "aspnetcore-alpine-sass.dll"]
+```
+
 ----------------
 
 This is to repo the alpine docker issue I was having with https://github.com/koenvzeijl/AspNetCore.SassCompiler
